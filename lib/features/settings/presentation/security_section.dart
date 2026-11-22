@@ -6,6 +6,7 @@ import '../../../core/security/kdf_params.dart';
 import '../../../core/widgets/vaultix_card.dart';
 import '../../authentication/presentation/auth_controller.dart';
 import '../data/auto_lock_provider.dart';
+import '../data/clipboard_provider.dart';
 
 class SecuritySection extends ConsumerWidget {
   const SecuritySection({super.key});
@@ -77,6 +78,14 @@ class SecuritySection extends ConsumerWidget {
             onTap: () => _pickAutoLock(context, ref),
           ),
           ListTile(
+            leading: const Icon(Icons.content_paste_off_rounded),
+            title: const Text('Clear clipboard'),
+            subtitle: Text(
+                clipboardClearOptions[ref.watch(clipboardClearProvider)] ?? ''),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => _pickClipboard(context, ref),
+          ),
+          ListTile(
             leading: const Icon(Icons.info_outline_rounded),
             title: const Text('Security information'),
             trailing: const Icon(Icons.chevron_right_rounded),
@@ -130,6 +139,33 @@ class SecuritySection extends ConsumerWidget {
                       e.key == current ? const Icon(Icons.check_rounded) : null,
                   onTap: () {
                     ref.read(autoLockProvider.notifier).set(e.key);
+                    Navigator.pop(ctx);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _pickClipboard(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) {
+        final current = ref.read(clipboardClearProvider);
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final e in clipboardClearOptions.entries)
+                ListTile(
+                  title: Text(e.value),
+                  trailing:
+                      e.key == current ? const Icon(Icons.check_rounded) : null,
+                  onTap: () {
+                    ref.read(clipboardClearProvider.notifier).set(e.key);
                     Navigator.pop(ctx);
                   },
                 ),

@@ -8,6 +8,7 @@ class AppConstants {
   static const prefThemeMode = 'pref_theme_mode';
   static const prefAccentColor = 'pref_accent_color';
   static const prefAutoLockSeconds = 'pref_auto_lock_seconds';
+  static const prefClipboardClearSeconds = 'pref_clipboard_clear_seconds';
 
   static const minMasterPasswordLength = 10;
   static const pinLength = 6;
