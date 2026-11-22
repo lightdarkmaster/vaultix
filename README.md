@@ -248,3 +248,6 @@ This project is currently maintained as a development project. Licensing and dis
 
 
 By: Christian Barbosa, Junior Software Developer
+
+------
+
