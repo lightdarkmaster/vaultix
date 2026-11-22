@@ -12,14 +12,17 @@ import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/vaultix_text_field.dart';
 import '../../categories/domain/category.dart';
 import '../../categories/presentation/category_providers.dart';
+import '../../password_generator/presentation/generator_sheet.dart';
 import '../data/vault_providers.dart';
 import '../domain/credential.dart';
 import 'vault_state.dart';
 
-/// Add (editId == null) or edit a credential.
+/// Add (editId == null) or edit a credential. [initialPassword] pre-fills the
+/// password when adding (used by "Save to vault" in the generator).
 class CredentialFormPage extends ConsumerStatefulWidget {
-  const CredentialFormPage({super.key, this.editId});
+  const CredentialFormPage({super.key, this.editId, this.initialPassword});
   final int? editId;
+  final String? initialPassword;
 
   @override
   ConsumerState<CredentialFormPage> createState() => _CredentialFormPageState();
@@ -84,6 +87,10 @@ class _CredentialFormPageState extends ConsumerState<CredentialFormPage> {
         _favorite = s.isFavorite;
       } else {
         _categoryId = otherId;
+        if (widget.initialPassword != null) {
+          _password.text = widget.initialPassword!;
+          _dirty = true;
+        }
       }
       if (mounted) setState(() => _loading = false);
     } catch (e) {
@@ -199,6 +206,13 @@ class _CredentialFormPageState extends ConsumerState<CredentialFormPage> {
     );
   }
 
+  Future<void> _generate() async {
+    final password = await showGeneratorSheet(context);
+    if (password == null || !mounted) return;
+    setState(() => _password.text = password);
+    _markDirty();
+  }
+
   Widget _categoryField() {
     final selected = _categories.where((c) => c.id == _categoryId).firstOrNull;
     return InkWell(
@@ -305,7 +319,16 @@ class _CredentialFormPageState extends ConsumerState<CredentialFormPage> {
                   validator: (v) =>
                       (v ?? '').isEmpty ? 'Enter a password' : null,
                 ),
-                PasswordStrengthMeter(password: _password.text),
+                Row(
+                  children: [
+                    Expanded(child: PasswordStrengthMeter(password: _password.text)),
+                    TextButton.icon(
+                      onPressed: _generate,
+                      icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+                      label: const Text('Generate'),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 _categoryField(),
                 const SizedBox(height: 16),

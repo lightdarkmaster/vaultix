@@ -47,7 +47,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/pin-setup', builder: (_, __) => const PinSetupPage()),
       GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
       // '/vault/new' must stay above '/vault/:id'.
-      GoRoute(path: '/vault/new', builder: (_, __) => const CredentialFormPage()),
+      GoRoute(
+        path: '/vault/new',
+        builder: (_, state) => CredentialFormPage(
+          initialPassword: state.extra is String ? state.extra as String : null,
+        ),
+      ),
       GoRoute(
         path: '/vault/:id',
         builder: (_, state) => CredentialDetailPage(
