@@ -1,4 +1,8 @@
 # vaultix
+# Branch
+1. main
+2. dev
+3. phase4
 
 A new Flutter project.
 
