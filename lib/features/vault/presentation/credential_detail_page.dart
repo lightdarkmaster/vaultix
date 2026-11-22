@@ -11,6 +11,7 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/vaultix_card.dart';
 import '../../categories/domain/category.dart';
 import '../../categories/presentation/category_providers.dart';
+import '../../dashboard/presentation/dashboard_state.dart';
 import '../../settings/data/clipboard_provider.dart';
 import '../data/vault_providers.dart';
 import '../domain/credential.dart';
@@ -34,8 +35,11 @@ class _CredentialDetailPageState extends ConsumerState<CredentialDetailPage> {
     super.initState();
     // Opening an entry counts as an access (feeds "Recently accessed" and
     // "Frequently used" on the dashboard).
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(credentialRepositoryProvider).markAccessed(widget.id);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(credentialRepositoryProvider).markAccessed(widget.id);
+      if (!mounted) return;
+      ref.invalidate(recentlyAccessedProvider);
+      ref.invalidate(frequentlyUsedProvider);
     });
   }
 
@@ -75,6 +79,7 @@ class _CredentialDetailPageState extends ConsumerState<CredentialDetailPage> {
         .setFavorite(c.id, !c.summary.isFavorite);
     ref.invalidate(credentialDetailProvider(c.id));
     ref.invalidate(credentialListProvider);
+    ref.invalidate(dashboardStatsProvider);
   }
 
   Future<void> _delete(Credential c) async {

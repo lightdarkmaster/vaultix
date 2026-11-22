@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import '../../../core/database/app_database.dart';
 import '../../../core/utils/exceptions.dart';
 import '../domain/credential.dart';
+import '../../password_health/domain/password_health.dart';
 import 'credential_cipher.dart';
 
 /// All credential persistence. Passwords and notes are encrypted before they
@@ -92,6 +93,45 @@ class CredentialRepository {
       ),
       notes: await _cipher.decryptNotes(key, row['notes'] as String?),
     );
+  }
+
+  Future<int> favoriteCount() async {
+    final db = await _db.database;
+    final rows = await db
+        .rawQuery('SELECT COUNT(*) AS c FROM credentials WHERE is_favorite = 1');
+    return (rows.first['c'] as int?) ?? 0;
+  }
+
+  /// Decrypts every password for local health analysis. The returned records
+  /// contain plaintext: analyse and drop them, never store them.
+  Future<List<PasswordRecord>> allForAnalysis() async {
+    final key = _keyProvider();
+    final db = await _db.database;
+    final rows = await db.query(
+      'credentials',
+      columns: [
+        'id',
+        'title',
+        'encrypted_password',
+        'password_updated_at',
+        'updated_at',
+      ],
+    );
+    final out = <PasswordRecord>[];
+    for (final r in rows) {
+      final password = await _cipher.decryptPassword(
+        key,
+        Uint8List.fromList(r['encrypted_password'] as List<int>),
+      );
+      final ms = (r['password_updated_at'] ?? r['updated_at']) as int;
+      out.add(PasswordRecord(
+        id: r['id'] as int,
+        title: r['title'] as String,
+        password: password,
+        passwordUpdatedAt: DateTime.fromMillisecondsSinceEpoch(ms),
+      ));
+    }
+    return out;
   }
 
   // ---- writes -----------------------------------------------------------------

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../categories/presentation/category_providers.dart';
+import '../../dashboard/presentation/dashboard_state.dart';
 import '../data/vault_providers.dart';
 import '../domain/credential.dart';
 import '../domain/vault_filter.dart';
@@ -14,6 +15,8 @@ class VaultFilterNotifier extends Notifier<VaultFilter> {
       id == null ? state.copyWith(clearCategory: true) : state.copyWith(categoryId: id);
   void toggleFavorites() =>
       state = state.copyWith(favoritesOnly: !state.favoritesOnly);
+  void setFavoritesOnly(bool value) =>
+      state = state.copyWith(favoritesOnly: value);
   void setSort(CredentialSort s) => state = state.copyWith(sort: s);
 
   /// Clears search and filters but keeps the chosen sort order.
@@ -46,4 +49,5 @@ final credentialDetailProvider =
 void refreshVault(WidgetRef ref) {
   ref.invalidate(credentialListProvider);
   ref.invalidate(categoriesProvider);
+  refreshDashboard(ref);
 }
