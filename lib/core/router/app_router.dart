@@ -12,6 +12,8 @@ import '../../features/password_generator/presentation/generator_page.dart';
 import '../../features/settings/presentation/change_master_password_page.dart';
 import '../../features/settings/presentation/pin_setup_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
+import '../../features/vault/presentation/credential_detail_page.dart';
+import '../../features/vault/presentation/credential_form_page.dart';
 import '../../features/vault/presentation/vault_page.dart';
 import '../widgets/app_shell.dart';
 
@@ -44,6 +46,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/lock', builder: (_, __) => const LockPage()),
       GoRoute(path: '/pin-setup', builder: (_, __) => const PinSetupPage()),
       GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
+      // '/vault/new' must stay above '/vault/:id'.
+      GoRoute(path: '/vault/new', builder: (_, __) => const CredentialFormPage()),
+      GoRoute(
+        path: '/vault/:id',
+        builder: (_, state) => CredentialDetailPage(
+          id: int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
+        ),
+      ),
+      GoRoute(
+        path: '/vault/:id/edit',
+        builder: (_, state) => CredentialFormPage(
+          editId: int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
+        ),
+      ),
       GoRoute(
         path: '/change-master',
         builder: (_, __) => const ChangeMasterPasswordPage(),

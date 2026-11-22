@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/security/crypto_service.dart';
 import '../../../core/security/security_providers.dart';
+import '../../settings/data/clipboard_provider.dart';
 import '../data/security_repository.dart';
 import '../domain/auth_service.dart';
 
@@ -132,6 +133,7 @@ class AuthController extends Notifier<AuthState> {
   void lock() {
     if (state.status != AuthStatus.unlocked) return;
     ref.read(vaultKeyProvider.notifier).clear();
+    ref.read(clipboardServiceProvider).clearIfPending();
     state = state.copyWith(status: AuthStatus.locked);
   }
 
