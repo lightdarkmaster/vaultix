@@ -8,6 +8,7 @@ import '../../../core/constants/category_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../categories/presentation/category_providers.dart';
+import '../../dashboard/presentation/dashboard_state.dart';
 import '../data/vault_providers.dart';
 import '../domain/credential.dart';
 import 'vault_state.dart';
@@ -49,6 +50,7 @@ class _VaultPageState extends ConsumerState<VaultPage> {
         .read(credentialRepositoryProvider)
         .setFavorite(c.id, !c.isFavorite);
     ref.invalidate(credentialListProvider);
+    ref.invalidate(dashboardStatsProvider);
   }
 
   @override
@@ -58,6 +60,16 @@ class _VaultPageState extends ConsumerState<VaultPage> {
     final list = ref.watch(credentialListProvider);
     final categories = ref.watch(categoriesProvider).valueOrNull ?? const [];
     final byId = {for (final c in categories) c.category.id: c.category};
+
+    // Keep the search box in sync when the query is set elsewhere (the
+    // dashboard search). Skipped while the user is mid-typing.
+    ref.listen<String>(vaultFilterProvider.select((f) => f.query), (_, q) {
+      if (_debounce?.isActive ?? false) return;
+      if (_search.text != q) {
+        _search.text = q;
+        setState(() {});
+      }
+    });
 
     return Scaffold(
       backgroundColor: Colors.transparent,
