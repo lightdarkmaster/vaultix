@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../authentication/presentation/auth_controller.dart';
 import '../../categories/presentation/category_providers.dart';
 import '../../dashboard/presentation/dashboard_state.dart';
 import '../data/vault_providers.dart';
@@ -8,7 +9,16 @@ import '../domain/vault_filter.dart';
 
 class VaultFilterNotifier extends Notifier<VaultFilter> {
   @override
-  VaultFilter build() => const VaultFilter();
+  VaultFilter build() {
+    // Don't leave a search term behind after the vault locks.
+    ref.listen<AuthStatus>(
+      authControllerProvider.select((s) => s.status),
+      (_, status) {
+        if (status != AuthStatus.unlocked) state = const VaultFilter();
+      },
+    );
+    return const VaultFilter();
+  }
 
   void setQuery(String q) => state = state.copyWith(query: q);
   void setCategory(int? id) => state =

@@ -8,6 +8,7 @@ import '../../../core/theme/theme_provider.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/vaultix_card.dart';
 import 'security_section.dart';
+import 'vault_management_section.dart';
 
 /// Appearance + About are functional now; security and vault management
 /// sections are added in later phases.
@@ -86,6 +87,9 @@ class SettingsPage extends ConsumerWidget {
             ],
           ),
         ),
+        const SizedBox(height: 20),
+        const SectionHeader(title: 'Vault management'),
+        const VaultManagementSection(),
         const SizedBox(height: 20),
         const SectionHeader(title: 'About'),
         const VaultixCard(

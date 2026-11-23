@@ -9,6 +9,7 @@ class AppConstants {
   static const prefAccentColor = 'pref_accent_color';
   static const prefAutoLockSeconds = 'pref_auto_lock_seconds';
   static const prefClipboardClearSeconds = 'pref_clipboard_clear_seconds';
+  static const prefLastBackupAt = 'pref_last_backup_at';
   static const prefGenLength = 'pref_gen_length';
   static const prefGenUpper = 'pref_gen_upper';
   static const prefGenLower = 'pref_gen_lower';

@@ -21,7 +21,7 @@ class AppDatabase {
   Future<Database> get database async => _db ??= await _open();
 
   Future<Database> _open() async {
-    final path = p.join(await getDatabasesPath(), _fileName);
+    final path = await databasePath();
     return openDatabase(
       path,
       version: _version,
@@ -101,6 +101,16 @@ class AppDatabase {
       );
     }
     await batch.commit(noResult: true);
+  }
+
+  Future<String> databasePath() async =>
+      p.join(await getDatabasesPath(), _fileName);
+
+  /// Deletes the database file. It is recreated (with the default categories)
+  /// the next time it is opened.
+  Future<void> wipe() async {
+    await close();
+    await deleteDatabase(await databasePath());
   }
 
   Future<void> close() async {

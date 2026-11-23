@@ -11,6 +11,9 @@ import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/password_generator/presentation/generator_page.dart';
 import '../../features/password_health/presentation/password_health_page.dart';
 import '../../features/settings/presentation/change_master_password_page.dart';
+import '../../features/settings/presentation/clear_vault_page.dart';
+import '../../features/settings/presentation/export_backup_page.dart';
+import '../../features/settings/presentation/import_backup_page.dart';
 import '../../features/settings/presentation/pin_setup_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/vault/presentation/credential_detail_page.dart';
@@ -48,6 +51,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/pin-setup', builder: (_, __) => const PinSetupPage()),
       GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
       GoRoute(path: '/health', builder: (_, __) => const PasswordHealthPage()),
+      GoRoute(path: '/backup/export', builder: (_, __) => const ExportBackupPage()),
+      GoRoute(path: '/backup/import', builder: (_, __) => const ImportBackupPage()),
+      GoRoute(path: '/clear-vault', builder: (_, __) => const ClearVaultPage()),
       // '/vault/new' must stay above '/vault/:id'.
       GoRoute(
         path: '/vault/new',

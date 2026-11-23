@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../settings/data/auto_lock_provider.dart';
 import 'auth_controller.dart';
+import 'auto_lock_suspension.dart';
 
 /// Locks the vault on inactivity and when the app has been in the background
 /// for longer than the configured timeout (0 = lock as soon as it leaves the
@@ -45,13 +46,20 @@ class _AutoLockWatcherState extends ConsumerState<AutoLockWatcher>
     if (!_unlocked) return;
     final secs = ref.read(autoLockProvider);
     if (secs <= 0) return;
-    _timer = Timer(Duration(seconds: secs), _lock);
+    _timer = Timer(Duration(seconds: secs), () {
+      if (ref.read(autoLockSuspensionProvider) > 0) {
+        _restartTimer();
+        return;
+      }
+      _lock();
+    });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final secs = ref.read(autoLockProvider);
     if (state == AppLifecycleState.paused) {
+      if (ref.read(autoLockSuspensionProvider) > 0) return;
       _pausedAt = DateTime.now();
       _timer?.cancel();
       if (secs == 0 && _unlocked) _lock();
