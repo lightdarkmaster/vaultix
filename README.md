@@ -1,253 +1,96 @@
+# Vaultix
 
-# Vaultix – Password Manager
+**Your Digital Life. One Secure Vault.**
 
-**Vaultix** is a Flutter-based mobile password manager application designed to help users securely organize, manage, and access their sensitive login credentials in one centralized location.
+A local-first Android password manager built with Flutter. No accounts, no
+servers, no analytics, no network access.
 
-The application aims to provide a simple, modern, and user-friendly experience for managing passwords while prioritizing security, privacy, and convenience. Vaultix is intended to eliminate the need to remember multiple passwords by allowing users to store and organize their credentials within a dedicated password management application.
-
----
-
-## Project Information
-
-| Information | Details |
-|---|---|
-| Project Name | Vaultix |
-| Application Type | Mobile Application |
-| Framework | Flutter |
-| Programming Language | Dart |
-| Platform | Android / iOS |
-| Repository | Vaultix |
-| Development Status | In Development |
-
-## Branches
-
-The project follows a branch-based development workflow to organize development activities, manage features, and maintain stable application versions.
-
-| Branch | Description |
-|---|---|
-| `main` | Main branch containing stable and production-ready versions of the application. |
-| `dev` | Development branch where new features, improvements, and bug fixes are integrated and tested. |
-| `phase4` | Dedicated development branch for Phase 4 implementation, enhancements, and project-specific requirements. |
-
-### Branch Workflow
-
-1. **main** – Maintains the stable version of Vaultix.
-2. **dev** – Used for ongoing development, feature integration, and testing.
-3. **phase4** – Used for implementing and maintaining Phase 4 requirements.
-
-Changes should be developed and tested in the appropriate development branch before being integrated into the main branch.
-
----
-
-## Project Overview
-
-Vaultix aims to provide users with a centralized platform for storing and managing important account credentials without relying on manual password tracking or unsecured storage methods.
-
-Through its mobile interface, users will be able to organize their saved accounts, retrieve login information when needed, and manage their stored credentials conveniently.
-
-The application is being developed using Flutter to support a consistent user experience and maintain a scalable codebase for future enhancements.
-
-## Key Features
-
-The following features represent the intended functionality of Vaultix:
-
-### 1. Password Management
-
-- Add and save account credentials.
-- View and manage stored passwords.
-- Edit existing credential entries.
-- Delete outdated or unnecessary credentials.
-- Organize credentials by account or service.
-
-### 2. Password Generator
-
-- Generate random and strong passwords.
-- Customize password length.
-- Configure uppercase and lowercase letters.
-- Include numbers and special characters.
-- Generate passwords to help users create stronger account credentials.
-
-### 3. Secure Access
-
-- Provide an authentication mechanism for accessing the application.
-- Support biometric authentication where available.
-- Protect sensitive password information.
-- Implement appropriate encryption and secure data storage.
-
-### 4. Credential Organization
-
-- Categorize saved credentials.
-- Search for specific accounts.
-- View saved account information through an organized interface.
-- Easily navigate between stored credentials.
-
-### 5. User Interface and Experience
-
-- Modern and clean mobile application interface.
-- User-friendly navigation.
-- Responsive layouts for different screen sizes.
-- Light and dark theme support.
-- Consistent application styling and visual components.
-
----
-
-## Technology Stack
-
-| Technology | Purpose |
-|---|---|
-| Flutter | Cross-platform mobile application development |
-| Dart | Primary programming language |
-| Material Design | User interface components and styling |
-| SQLite / Local Storage | Local data persistence, depending on implementation |
-| Git | Version control |
-| GitHub | Source code repository and collaboration |
-
-*Note: The technology and storage integrations may evolve as the project progresses.*
-
----
-
-## Getting Started
-
-Follow these instructions to set up and run Vaultix on your local development environment.
-
-### Prerequisites
-
-Before running the project, ensure that the following tools are installed:
-
-- [Flutter SDK](https://docs.flutter.dev/get-started/install)
-- [Dart SDK](https://dart.dev/get-dart)
-- [Android Studio](https://developer.android.com/studio) or [Visual Studio Code](https://code.visualstudio.com/)
-- Git
-- Android Emulator or a physical Android device
-
-### Installation
-
-**1. Clone the Repository**
+## Setup
 
 ```bash
-git clone <repository-url>
-```
-
-**2. Navigate to the Project Directory**
-
-```bash
-cd vaultix
-```
-
-**3. Switch to the Development Branch**
-
-```bash
-git checkout dev
-```
-
-**4. Install Dependencies**
-
-```bash
+flutter create --org com.vaultix --project-name vaultix --platforms android .
+# unzip the Vaultix project over it so lib/, test/, assets/ and pubspec.yaml replace the generated ones
 flutter pub get
-```
-
-**5. Check Flutter Environment**
-
-```bash
-flutter doctor
-```
-
-**6. Run the Application**
-
-```bash
+dart run flutter_launcher_icons      # generates the launcher icon
+flutter analyze
+flutter test
 flutter run
 ```
 
----
+### Android configuration (one time)
 
-## Development Guidelines
+1. **MainActivity.** Replace `android/app/src/main/kotlin/com/vaultix/vaultix/MainActivity.kt`
+   with `android_setup/MainActivity.kt` (needed for biometrics; also hides the app
+   in the recent-apps switcher).
+2. **AndroidManifest.xml** (`android/app/src/main/`):
+   - `<uses-permission android:name="android.permission.USE_BIOMETRIC"/>`
+   - on `<application>`: `android:label="Vaultix"` and `android:allowBackup="false"`
+3. **minSdk** must be 23 or higher (`android/app/build.gradle` or `.kts`).
+4. If the biometric prompt crashes with a theme error, set the parent of
+   `LaunchTheme` and `NormalTheme` in `res/values/styles.xml` to
+   `Theme.AppCompat.DayNight`.
 
-To maintain an organized development workflow, follow these guidelines:
+Publisher details (developer name, contact email) live in
+`lib/core/constants/app_info.dart`.
 
-1. Create or switch to the appropriate branch before implementing changes.
-2. Follow the existing project structure and coding conventions.
-3. Use meaningful names for variables, classes, methods, and files.
-4. Keep application components modular and reusable.
-5. Test newly implemented features before merging changes.
-6. Resolve identified bugs before integrating changes into stable branches.
-7. Commit changes using clear and descriptive commit messages.
+## Architecture
 
-### Example Git Commands
+Feature-based layout with `data / domain / presentation` per feature and a
+shared `core/`. State management is Riverpod; navigation is go_router with an
+auth-aware redirect (splash → setup / lock → app shell). The structure is
+pragmatic rather than strict Clean Architecture: repositories are concrete
+classes exposed through providers, with no separate use-case layer.
 
-```bash
-# Check current branch
-git branch
-
-# Switch to development branch
-git checkout dev
-
-# Pull latest changes
-git pull origin dev
-
-# Stage changes
-git add .
-
-# Commit changes
-git commit -m "feat: implement password management"
-
-# Push changes
-git push origin dev
+```
+lib/
+  core/            constants, theme, security (crypto, secure store, clipboard),
+                   database (sqflite), router, utils, shared widgets
+  features/
+    authentication/  master password, lock/setup, PIN, biometrics, auto-lock
+    dashboard/       home screen
+    vault/           credentials: list, form, detail, repository, cipher
+    password_generator/
+    password_health/ analysis engine, recommendations, health screen
+    categories/
+    settings/        security, appearance, backup/restore, clear vault, about, legal
 ```
 
----
+## Security model
 
-## Project Objectives
+```
+master password --Argon2id(salt)--> KEK --AES-256-GCM--> wraps random 256-bit vault key
+vault key --AES-256-GCM (unique nonce, field-bound AAD)--> password and notes columns
+```
 
-The primary objectives of Vaultix are:
+- The master password is never stored. A wrong password simply fails to unwrap the key.
+- The vault key exists in memory only while unlocked and is zeroed on lock.
+- PIN: vault key wrapped by an Argon2id key derived from the PIN, stored in
+  Keystore-backed secure storage; removed after 5 wrong attempts.
+- Biometrics: a copy of the vault key in Keystore-backed secure storage, released
+  only after an in-app biometric prompt (not hardware-bound to the sensor).
+- Failed attempts: 5 free tries, then 30 s doubling to 15 min, persisted.
+- Entry names, website, username and tags are stored unencrypted so search works.
+- Clipboard is cleared after a configurable delay and on lock.
+- `FLAG_SECURE` hides the app in the recent-apps switcher (also blocks screenshots).
+- Argon2id comes from the `cryptography` package (pure Dart, run in an isolate), so
+  it is slow in debug builds and fine in release.
 
-- Develop a reliable and user-friendly password management application.
-- Provide a centralized solution for managing multiple account credentials.
-- Promote better password management practices.
-- Prioritize user privacy and data protection.
-- Implement secure mechanisms for handling sensitive information.
-- Establish a scalable application architecture that supports future improvements and additional features.
+## Backup file format
 
----
+JSON: `{ format: "vaultix-backup", version: 1, kdf: {...}, salt, data }`. `data` is
+the payload encrypted with AES-256-GCM under an Argon2id key from the *backup*
+password (separate from the master password). KDF parameters are bounds-checked on
+import.
 
-## Future Enhancements
+## Database
 
-Potential improvements and additional functionalities include:
+SQLite via sqflite, schema version 2 (v1 → v2 adds `password_updated_at`,
+`access_count` and seeds default categories). Tables: `credentials`, `categories`,
+`settings`, `security`.
 
-- Cloud backup and synchronization.
-- Password health and strength analysis.
-- Duplicate password detection.
-- Secure password sharing.
-- Automatic password expiration reminders.
-- Import and export of password records.
-- Multi-device synchronization.
-- Additional authentication and security options.
+## Tests
 
----
-
-## Resources and Documentation
-
-The following resources can help developers understand Flutter development and application implementation:
-
-- [Flutter Documentation](https://docs.flutter.dev/)
-- [Write Your First Flutter App](https://docs.flutter.dev/get-started/codelab)
-- [Flutter Cookbook](https://docs.flutter.dev/cookbook)
-- [Dart Documentation](https://dart.dev/guides)
-- [Flutter Packages](https://pub.dev/)
-
-For additional information about Flutter development, refer to the official [Flutter Documentation](https://docs.flutter.dev/), which provides tutorials, development guides, code samples, and API references.
-
----
-
-## License
-
-This project is currently maintained as a development project. Licensing and distribution details may be established in a future release.
-
----
-
-**Vaultix – Your Passwords, Organized. Your Digital Life, Protected.**
-
-
-By: Christian Barbosa, Junior Software Developer
-
-------
-
+`flutter test` runs crypto, backup codec, credential cipher, password strength,
+generator, health analysis, recommendations, URL and filter logic, and a few widget
+tests. SQLite repositories (merge/replace import, category rules, wipe) are not
+covered by automated tests; use `RELEASE_CHECKLIST.md`.

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/vaultix_card.dart';
+import 'about_section.dart';
 import 'security_section.dart';
 import 'vault_management_section.dart';
 
@@ -92,15 +92,7 @@ class SettingsPage extends ConsumerWidget {
         const VaultManagementSection(),
         const SizedBox(height: 20),
         const SectionHeader(title: 'About'),
-        const VaultixCard(
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(Icons.shield_rounded),
-            title: Text(AppConstants.appName),
-            subtitle: Text('${AppConstants.tagline}\nVersion ${AppConstants.version}'),
-            isThreeLine: true,
-          ),
-        ),
+        const AboutSection(),
       ],
     );
   }
