@@ -206,7 +206,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
           // 4. Security overview
           const SectionHeader(title: 'Security overview'),
-          SecurityOverviewCard(report: health),
+          SecurityOverviewCard(
+            report: health,
+            onTap: () => context.push('/health'),
+          ),
           const SizedBox(height: 20),
 
           // 5. Quick actions
