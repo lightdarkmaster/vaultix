@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/vaultix_logo.dart';
+
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
@@ -10,8 +12,7 @@ class SplashPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.shield_rounded,
-                size: 64, color: Theme.of(context).colorScheme.primary),
+            const VaultixLogo(size: 84),
             const SizedBox(height: 24),
             const CircularProgressIndicator(),
           ],

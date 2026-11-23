@@ -14,11 +14,13 @@ import '../../features/settings/presentation/change_master_password_page.dart';
 import '../../features/settings/presentation/clear_vault_page.dart';
 import '../../features/settings/presentation/export_backup_page.dart';
 import '../../features/settings/presentation/import_backup_page.dart';
+import '../../features/settings/presentation/legal_page.dart';
 import '../../features/settings/presentation/pin_setup_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
 import '../../features/vault/presentation/credential_detail_page.dart';
 import '../../features/vault/presentation/credential_form_page.dart';
 import '../../features/vault/presentation/vault_page.dart';
+import '../../features/settings/domain/legal_content.dart';
 import '../widgets/app_shell.dart';
 
 const _authPages = {'/splash', '/setup', '/lock'};
@@ -54,6 +56,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/backup/export', builder: (_, __) => const ExportBackupPage()),
       GoRoute(path: '/backup/import', builder: (_, __) => const ImportBackupPage()),
       GoRoute(path: '/clear-vault', builder: (_, __) => const ClearVaultPage()),
+      GoRoute(
+        path: '/legal/privacy',
+        builder: (_, __) => const LegalPage(document: privacyPolicy),
+      ),
+      GoRoute(
+        path: '/legal/terms',
+        builder: (_, __) => const LegalPage(document: termsAndConditions),
+      ),
       // '/vault/new' must stay above '/vault/:id'.
       GoRoute(
         path: '/vault/new',
