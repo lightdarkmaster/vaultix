@@ -9,6 +9,7 @@ import '../../features/authentication/presentation/splash_page.dart';
 import '../../features/categories/presentation/categories_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/password_generator/presentation/generator_page.dart';
+import '../../features/password_health/presentation/password_health_page.dart';
 import '../../features/settings/presentation/change_master_password_page.dart';
 import '../../features/settings/presentation/pin_setup_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
@@ -46,6 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/lock', builder: (_, __) => const LockPage()),
       GoRoute(path: '/pin-setup', builder: (_, __) => const PinSetupPage()),
       GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
+      GoRoute(path: '/health', builder: (_, __) => const PasswordHealthPage()),
       // '/vault/new' must stay above '/vault/:id'.
       GoRoute(
         path: '/vault/new',

@@ -123,8 +123,9 @@ class CredentialMiniList extends StatelessWidget {
 }
 
 class SecurityOverviewCard extends StatelessWidget {
-  const SecurityOverviewCard({super.key, required this.report});
+  const SecurityOverviewCard({super.key, required this.report, this.onTap});
   final AsyncValue<HealthReport> report;
+  final VoidCallback? onTap;
 
   Color _scoreColor(int score) => score >= 80
       ? AppColors.success
@@ -155,6 +156,7 @@ class SecurityOverviewCard extends StatelessWidget {
 
     return VaultixCard(
       padding: const EdgeInsets.all(18),
+      onTap: onTap,
       child: report.when(
         loading: () => const SizedBox(
           height: 84,
@@ -231,6 +233,12 @@ class SecurityOverviewCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(_tip(r), style: TextStyle(fontSize: 12.5, color: muted)),
+                    const SizedBox(height: 6),
+                    Text('View details',
+                        style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.primary)),
                   ],
                 ),
               ),

@@ -40,4 +40,5 @@ void refreshDashboard(WidgetRef ref) {
   ref.invalidate(recentlyAccessedProvider);
   ref.invalidate(frequentlyUsedProvider);
   ref.invalidate(passwordHealthProvider);
+  ref.invalidate(healthEntriesProvider);
 }
