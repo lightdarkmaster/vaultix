@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/security/crypto_service.dart';
 import '../../../core/security/security_providers.dart';
 import '../../settings/data/clipboard_provider.dart';
+import '../../settings/data/vault_reset_service.dart';
 import '../data/security_repository.dart';
 import '../domain/auth_service.dart';
 
@@ -146,6 +147,30 @@ class AuthController extends Notifier<AuthState> {
       next: next,
     );
     if (outcome.isSuccess) CryptoService.wipe(outcome.vaultKey!);
+    return outcome;
+  }
+
+  /// Re-checks the master password for sensitive actions (backup export,
+  /// erasing the vault). If too many wrong attempts trigger a lockout, the
+  /// vault locks so the lock screen can show the countdown.
+  Future<UnlockOutcome> verifyMasterPassword(String password) async {
+    final outcome = await _service.verifyMasterPassword(password);
+    if (outcome.status == UnlockStatus.lockedOut) lock();
+    return outcome;
+  }
+
+  /// Erases all vault data after re-checking the master password, then sends
+  /// the app back to first-time setup.
+  Future<UnlockOutcome> clearVaultData(String masterPassword) async {
+    final outcome = await verifyMasterPassword(masterPassword);
+    if (!outcome.isSuccess) return outcome;
+    await ref.read(vaultResetServiceProvider).wipeAll();
+    ref.read(vaultKeyProvider.notifier).clear();
+    ref.read(clipboardServiceProvider).clearIfPending();
+    state = AuthState(
+      status: AuthStatus.setupRequired,
+      biometricAvailable: state.biometricAvailable,
+    );
     return outcome;
   }
 

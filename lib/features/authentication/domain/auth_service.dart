@@ -104,6 +104,16 @@ class AuthService {
     return UnlockOutcome.success(key);
   }
 
+  /// Re-checks the master password without unlocking anything (used before
+  /// exporting a backup or erasing the vault). Wrong attempts count towards
+  /// the same lockout as normal unlocking.
+  Future<UnlockOutcome> verifyMasterPassword(String password) async {
+    final outcome = await unlockWithMasterPassword(password);
+    final key = outcome.vaultKey;
+    if (key != null) CryptoService.wipe(key);
+    return outcome;
+  }
+
   /// Re-wraps the same vault key under a new password, so stored credentials
   /// and PIN/biometric unlock keep working.
   Future<UnlockOutcome> changeMasterPassword({
