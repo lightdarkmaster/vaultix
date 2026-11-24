@@ -22,14 +22,23 @@ final authServiceProvider = Provider<AuthService>(
 );
 
 /// The decrypted vault key. Non-null only while the vault is unlocked.
+///
+/// Stores a private copy and exposes copies to callers to prevent in-place
+/// wiping from corrupting in-flight encrypt/decrypt operations.
 class VaultKeyNotifier extends Notifier<Uint8List?> {
   @override
   Uint8List? build() => null;
 
+  Uint8List? copy() {
+    final key = state;
+    return key == null ? null : Uint8List.fromList(key);
+  }
+
   void set(Uint8List key) {
     final old = state;
-    state = key;
+    state = Uint8List.fromList(key);
     if (old != null) CryptoService.wipe(old);
+    if (!identical(old, key)) CryptoService.wipe(key);
   }
 
   void clear() {
@@ -174,11 +183,16 @@ class AuthController extends Notifier<AuthState> {
     return outcome;
   }
 
-  Future<void> enablePin(String pin) async {
-    final key = ref.read(vaultKeyProvider);
-    if (key == null) return;
-    await _service.enablePin(pin, key);
-    await _refreshQuickUnlock();
+  Future<bool> enablePin(String pin) async {
+    final key = ref.read(vaultKeyProvider.notifier).copy();
+    if (key == null) return false;
+    try {
+      await _service.enablePin(pin, key);
+      await _refreshQuickUnlock();
+      return true;
+    } finally {
+      CryptoService.wipe(key);
+    }
   }
 
   Future<void> disablePin() async {

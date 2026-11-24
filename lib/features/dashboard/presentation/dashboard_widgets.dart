@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -28,8 +28,7 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final muted =
-        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
+    final muted = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.62);
     return VaultixCard(
       padding: const EdgeInsets.all(14),
       onTap: onTap,
@@ -37,26 +36,29 @@ class StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
+              gradient: LinearGradient(
+                colors: [color.withValues(alpha: 0.22), color.withValues(alpha: 0.10)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: color.withValues(alpha: 0.14)),
             ),
             child: Icon(icon, size: 20, color: color),
           ),
-          const SizedBox(height: 12),
-          Text(value,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 14),
+          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.4)),
           const SizedBox(height: 2),
-          Text(label, style: TextStyle(fontSize: 12, color: muted)),
+          Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: muted)),
         ],
       ),
     );
   }
 }
 
-/// Horizontal strip of compact credential cards.
 class CredentialMiniList extends StatelessWidget {
   const CredentialMiniList({
     super.key,
@@ -73,9 +75,10 @@ class CredentialMiniList extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return SizedBox(
-      height: 118,
+      height: 122,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         itemCount: items.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (_, i) {
@@ -83,7 +86,7 @@ class CredentialMiniList extends StatelessWidget {
           final cat = categories[c.categoryId];
           final color = cat != null ? Color(cat.color) : scheme.primary;
           return SizedBox(
-            width: 156,
+            width: 160,
             child: VaultixCard(
               padding: const EdgeInsets.all(12),
               onTap: () => onOpen(c),
@@ -95,20 +98,14 @@ class CredentialMiniList extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(c.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w700, fontSize: 14)),
+                      Text(c.title, maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                      const SizedBox(height: 2),
                       Text(
-                        (c.username?.isNotEmpty ?? false)
-                            ? c.username!
-                            : (c.websiteUrl ?? ' '),
+                        (c.username?.isNotEmpty ?? false) ? c.username! : (c.websiteUrl ?? ' '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: scheme.onSurface.withValues(alpha: 0.6)),
+                        style: TextStyle(fontSize: 12, color: scheme.onSurface.withValues(alpha: 0.6)),
                       ),
                     ],
                   ),
@@ -134,51 +131,40 @@ class SecurityOverviewCard extends StatelessWidget {
           : AppColors.error;
 
   String _tip(HealthReport r) {
-    if (r.weakCount > 0) {
-      return 'Update your ${plural(r.weakCount, 'weak password')} first.';
-    }
+    if (r.weakCount > 0) return 'Update your ${plural(r.weakCount, 'weak password')} first.';
     if (r.reusedCount > 0) {
-      return '${plural(r.reusedCount, 'password')} '
-          '${r.reusedCount == 1 ? 'is' : 'are'} reused. '
-          'Use a unique one for each account.';
+      return '${plural(r.reusedCount, 'password')} ${r.reusedCount == 1 ? 'is' : 'are'} reused. Use a unique one for each account.';
     }
     if (r.oldCount > 0) {
-      return '${plural(r.oldCount, 'password')} '
-          '${r.oldCount == 1 ? 'has' : 'have'} not changed in over 6 months.';
+      return '${plural(r.oldCount, 'password')} ${r.oldCount == 1 ? 'has' : 'have'} not changed in over 6 months.';
     }
     return 'Your passwords look healthy. Nice work.';
   }
 
   @override
   Widget build(BuildContext context) {
-    final muted =
-        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
-
+    final muted = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.62);
     return VaultixCard(
       padding: const EdgeInsets.all(18),
       onTap: onTap,
       child: report.when(
-        loading: () => const SizedBox(
-          height: 84,
-          child: Center(child: CircularProgressIndicator()),
-        ),
-        error: (_, __) => Text(
-          'Could not analyse your passwords right now.',
-          style: TextStyle(color: muted),
-        ),
+        loading: () => const SizedBox(height: 88, child: Center(child: CircularProgressIndicator())),
+        error: (_, __) => Text('Could not analyse your passwords right now.', style: TextStyle(color: muted)),
         data: (r) {
           final score = r.score;
           if (score == null) {
             return Row(
               children: [
-                const Icon(Icons.shield_outlined, size: 32),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Text(
-                    'Add passwords to see your security score.',
-                    style: TextStyle(color: muted),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
+                  child: const Icon(Icons.shield_outlined, size: 28),
                 ),
+                const SizedBox(width: 14),
+                Expanded(child: Text('Add passwords to see your security score.', style: TextStyle(color: muted))),
               ],
             );
           }
@@ -186,28 +172,32 @@ class SecurityOverviewCard extends StatelessWidget {
           return Row(
             children: [
               SizedBox(
-                width: 84,
-                height: 84,
+                width: 86,
+                height: 86,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
                     SizedBox.expand(
                       child: TweenAnimationBuilder<double>(
                         tween: Tween(end: score / 100),
-                        duration: const Duration(milliseconds: 600),
+                        duration: const Duration(milliseconds: 700),
                         curve: Curves.easeOutCubic,
                         builder: (_, v, __) => CircularProgressIndicator(
                           value: v,
                           strokeWidth: 8,
                           strokeCap: StrokeCap.round,
                           color: color,
-                          backgroundColor: color.withValues(alpha: 0.15),
+                          backgroundColor: color.withValues(alpha: 0.14),
                         ),
                       ),
                     ),
-                    Text('$score',
-                        style: const TextStyle(
-                            fontSize: 26, fontWeight: FontWeight.w800)),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('$score', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+                        Text('score', style: TextStyle(fontSize: 10, color: muted)),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -216,11 +206,7 @@ class SecurityOverviewCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(r.scoreLabel,
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: color)),
+                    Text(r.scoreLabel, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: color)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -232,16 +218,12 @@ class SecurityOverviewCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(_tip(r), style: TextStyle(fontSize: 12.5, color: muted)),
-                    const SizedBox(height: 6),
-                    Text('View details',
-                        style: TextStyle(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
-                            color: Theme.of(context).colorScheme.primary)),
+                    Text(_tip(r), style: TextStyle(fontSize: 12.5, color: muted, height: 1.3)),
                   ],
                 ),
               ),
+              const SizedBox(width: 4),
+              Icon(Icons.chevron_right_rounded, color: muted),
             ],
           );
         },
@@ -258,25 +240,19 @@ class _Pill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
+        color: color.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.12)),
       ),
-      child: Text(text,
-          style: TextStyle(
-              fontSize: 12, fontWeight: FontWeight.w600, color: color)),
+      child: Text(text, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: color)),
     );
   }
 }
 
 class QuickAction extends StatelessWidget {
-  const QuickAction({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+  const QuickAction({super.key, required this.icon, required this.label, required this.onTap});
 
   final IconData icon;
   final String label;
@@ -292,19 +268,21 @@ class QuickAction extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: primary.withValues(alpha: 0.14),
+              gradient: LinearGradient(
+                colors: [primary.withValues(alpha: 0.18), primary.withValues(alpha: 0.08)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               shape: BoxShape.circle,
+              border: Border.all(color: primary.withValues(alpha: 0.12)),
             ),
             child: Icon(icon, color: primary, size: 22),
           ),
           const SizedBox(height: 8),
-          Text(label,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          Text(label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
         ],
       ),

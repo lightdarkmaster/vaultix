@@ -111,7 +111,10 @@ class AuthService {
     final outcome = await unlockWithMasterPassword(password);
     final key = outcome.vaultKey;
     if (key != null) CryptoService.wipe(key);
-    return outcome;
+    return switch (outcome.status) {
+      UnlockStatus.success => const UnlockOutcome._(UnlockStatus.success),
+      _ => outcome,
+    };
   }
 
   /// Re-wraps the same vault key under a new password, so stored credentials
@@ -178,33 +181,34 @@ class AuthService {
     final raw = await _store.read(SecureKeys.pinBlob);
     if (raw == null) return const UnlockOutcome.unavailable();
 
-    final data = jsonDecode(raw) as Map<String, dynamic>;
-    final kek = await _crypto.deriveKey(
-      pin,
-      Uint8List.fromList(base64Decode(data['salt'] as String)),
-      KdfParams.fromMap(data['kdf'] as Map<String, dynamic>),
-    );
-    final key = await _crypto.decrypt(
-      kek,
-      Uint8List.fromList(base64Decode(data['blob'] as String)),
-    );
-    CryptoService.wipe(kek);
+    try {
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      final salt = Uint8List.fromList(base64Decode(data['salt'] as String));
+      final blob = Uint8List.fromList(base64Decode(data['blob'] as String));
+      final kdf = KdfParams.fromMap(data['kdf'] as Map<String, dynamic>);
+      final kek = await _crypto.deriveKey(pin, salt, kdf);
+      final key = await _crypto.decrypt(kek, blob);
+      CryptoService.wipe(kek);
 
-    if (key == null) {
-      final fails =
-          (int.tryParse(await _store.read(SecureKeys.pinFailed) ?? '') ?? 0) +
-              1;
-      if (fails >= maxPinAttempts) {
-        await disablePin();
-        await _registerFailure();
-        return const UnlockOutcome.pinRemoved();
+      if (key == null) {
+        final fails =
+            (int.tryParse(await _store.read(SecureKeys.pinFailed) ?? '') ?? 0) +
+                1;
+        if (fails >= maxPinAttempts) {
+          await disablePin();
+          await _registerFailure();
+          return const UnlockOutcome.pinRemoved();
+        }
+        await _store.write(SecureKeys.pinFailed, '$fails');
+        return _registerFailure();
       }
-      await _store.write(SecureKeys.pinFailed, '$fails');
-      return _registerFailure();
+      await _store.delete(SecureKeys.pinFailed);
+      await _resetFailures();
+      return UnlockOutcome.success(key);
+    } catch (_) {
+      await disablePin();
+      return const UnlockOutcome.unavailable();
     }
-    await _store.delete(SecureKeys.pinFailed);
-    await _resetFailures();
-    return UnlockOutcome.success(key);
   }
 
   // ---- biometrics -------------------------------------------------------------

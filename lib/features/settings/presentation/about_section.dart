@@ -62,10 +62,10 @@ class AboutSection extends ConsumerWidget {
             ),
           ),
           const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.person_outline_rounded),
-            title: const Text('Developer'),
-            subtitle: const Text(AppInfo.developerName),
+          const ListTile(
+            leading: Icon(Icons.person_outline_rounded),
+            title: Text('Developer'),
+            subtitle: Text(AppInfo.developerName),
           ),
           if (AppInfo.contactEmail.isNotEmpty)
             ListTile(

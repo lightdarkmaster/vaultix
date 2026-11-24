@@ -15,7 +15,7 @@ final credentialRepositoryProvider = Provider<CredentialRepository>(
     ref.watch(appDatabaseProvider),
     ref.watch(credentialCipherProvider),
     () {
-      final key = ref.read(vaultKeyProvider);
+      final key = ref.read(vaultKeyProvider.notifier).copy();
       if (key == null) throw const VaultLockedException();
       return key;
     },
