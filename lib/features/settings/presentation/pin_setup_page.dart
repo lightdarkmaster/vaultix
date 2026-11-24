@@ -43,8 +43,15 @@ class _PinSetupPageState extends ConsumerState<PinSetupPage> {
       return;
     }
     setState(() => _busy = true);
-    await ref.read(authControllerProvider.notifier).enablePin(pin);
+    final ok = await ref.read(authControllerProvider.notifier).enablePin(pin);
     if (!mounted) return;
+    setState(() => _busy = false);
+    if (!ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not enable PIN. Unlock the vault and try again.')),
+      );
+      return;
+    }
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text('PIN unlock enabled')));
     context.pop();

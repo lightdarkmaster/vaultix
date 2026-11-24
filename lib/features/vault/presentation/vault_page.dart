@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/category_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -73,11 +74,18 @@ class _VaultPageState extends ConsumerState<VaultPage> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton(
-        heroTag: null,
-        tooltip: 'Add password',
-        onPressed: () => context.push('/vault/new'),
-        child: const Icon(Icons.add_rounded),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          bottom: AppConstants.floatingNavReserved +
+              24 +
+              MediaQuery.viewPaddingOf(context).bottom,
+        ),
+        child: FloatingActionButton(
+          heroTag: null,
+          tooltip: 'Add password',
+          onPressed: () => context.push('/vault/new'),
+          child: const Icon(Icons.add_rounded),
+        ),
       ),
       body: Column(
         children: [
@@ -205,7 +213,14 @@ class _VaultPageState extends ConsumerState<VaultPage> {
                         );
                 }
                 return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 96),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    4,
+                    20,
+                    AppConstants.floatingNavReserved +
+                        80 +
+                        MediaQuery.viewPaddingOf(context).bottom,
+                  ),
                   itemCount: items.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 10),
                   itemBuilder: (_, i) {

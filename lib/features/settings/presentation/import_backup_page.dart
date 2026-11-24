@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+﻿import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +48,9 @@ class _ImportBackupPageState extends ConsumerState<ImportBackupPage> {
         ref,
         () => FilePicker.platform.pickFiles(type: FileType.any, withData: true),
       );
-      if (picked == null || picked.files.isEmpty) return;
+      if (picked == null || picked.files.isEmpty) {
+        return;
+      }
       final file = picked.files.single;
       final bytes = file.bytes;
       if (bytes == null) {
@@ -91,15 +93,19 @@ class _ImportBackupPageState extends ConsumerState<ImportBackupPage> {
         _busy = false;
       });
     } on BackupException catch (e) {
-      if (mounted) setState(() {
-        _busy = false;
-        _error = e.message;
-      });
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _error = e.message;
+        });
+      }
     } catch (_) {
-      if (mounted) setState(() {
-        _busy = false;
-        _error = 'Could not open this backup.';
-      });
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _error = 'Could not open this backup.';
+        });
+      }
     }
   }
 
@@ -107,7 +113,9 @@ class _ImportBackupPageState extends ConsumerState<ImportBackupPage> {
     final contents = _contents!;
     if (_mode == ImportMode.replace) {
       final current = await ref.read(credentialRepositoryProvider).count();
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       final ok = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -133,7 +141,9 @@ class _ImportBackupPageState extends ConsumerState<ImportBackupPage> {
           ],
         ),
       );
-      if (ok != true) return;
+      if (ok != true) {
+        return;
+      }
     }
 
     setState(() {
@@ -152,10 +162,12 @@ class _ImportBackupPageState extends ConsumerState<ImportBackupPage> {
         _busy = false;
       });
     } catch (_) {
-      if (mounted) setState(() {
-        _busy = false;
-        _error = 'The import failed and nothing was changed.';
-      });
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _error = 'The import failed and nothing was changed.';
+        });
+      }
     }
   }
 
@@ -209,7 +221,7 @@ class _ImportBackupPageState extends ConsumerState<ImportBackupPage> {
                 const SizedBox(height: 10),
                 Text(
                   '${c.credentials.length} '
-                  '${c.credentials.length == 1 ? 'entry' : 'entries'} · '
+                  '${c.credentials.length == 1 ? 'entry' : 'entries'} Â· '
                   '${c.categories.length} '
                   '${c.categories.length == 1 ? 'category' : 'categories'}',
                 ),
@@ -345,3 +357,5 @@ class _ImportBackupPageState extends ConsumerState<ImportBackupPage> {
     );
   }
 }
+
+

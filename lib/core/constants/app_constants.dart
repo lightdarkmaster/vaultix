@@ -19,4 +19,10 @@ class AppConstants {
 
   static const minMasterPasswordLength = 10;
   static const pinLength = 6;
+
+  /// Vertical space reserved by the floating glass bottom nav (bar height +
+  /// bar padding + outer margin), excluding the device gesture inset.
+  /// Branch pages must add this to their bottom scroll padding because the
+  /// shell uses `extendBody: true` so content can scroll behind the bar.
+  static const floatingNavReserved = 104.0;
 }

@@ -19,7 +19,7 @@ final backupServiceProvider = Provider<BackupService>(
     ref.watch(backupCodecProvider),
     ref.watch(credentialCipherProvider),
     () {
-      final key = ref.read(vaultKeyProvider);
+      final key = ref.read(vaultKeyProvider.notifier).copy();
       if (key == null) throw const VaultLockedException();
       return key;
     },
