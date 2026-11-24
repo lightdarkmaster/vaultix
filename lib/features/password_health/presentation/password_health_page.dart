@@ -33,6 +33,7 @@ class PasswordHealthPage extends ConsumerWidget {
     final byCategory = {for (final c in cats) c.category.id: c.category};
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(title: const Text('Password health')),
       body: report.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -191,7 +192,7 @@ class _Body extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
               child: Text('Same password on ${group.length} accounts',
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: AppColors.warning)),

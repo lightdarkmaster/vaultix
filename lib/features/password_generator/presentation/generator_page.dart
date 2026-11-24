@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/password_strength.dart';
 import '../../../core/widgets/password_strength_meter.dart';
 import '../../../core/widgets/primary_button.dart';
@@ -35,9 +36,15 @@ class GeneratorPage extends ConsumerWidget {
     final strength = estimatePasswordStrength(state.password);
     final muted =
         Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55);
+    final bottomPad = MediaQuery.viewPaddingOf(context).bottom;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        16,
+        20,
+        AppConstants.floatingNavReserved + bottomPad,
+      ),
       children: [
         Text('Generator', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 6),
