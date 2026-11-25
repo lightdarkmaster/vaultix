@@ -66,22 +66,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(
-          bottom: AppConstants.floatingNavReserved + 24 + bottomPad,
-        ),
-        child: FloatingActionButton.extended(
-          heroTag: null,
-          onPressed: () => context.push('/vault/new'),
-          icon: const Icon(Icons.add_rounded),
-          label: const Text('Add password'),
-        ),
-      ),
+      floatingActionButton: null,
       body: SafeArea(
         bottom: false,
-        child: ListView(
-          padding: EdgeInsets.fromLTRB(20, 16, 20, AppConstants.floatingNavReserved + 24 + bottomPad + 80),
+        child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Column(
+                children: [
             Row(
               children: [
                 Expanded(
@@ -98,11 +91,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   child: GlassSurface(
                     borderRadius: 16,
                     padding: const EdgeInsets.all(2),
-                    onTap: ref.read(authControllerProvider.notifier).lock,
+                    onTap: () => context.push('/vault/new'),
                     child: IconButton(
-                      tooltip: 'Lock vault',
-                      onPressed: ref.read(authControllerProvider.notifier).lock,
-                      icon: const Icon(Icons.lock_rounded),
+                      tooltip: 'Add password',
+                      onPressed: () => context.push('/vault/new'),
+                      icon: const Icon(Icons.add_rounded),
                     ),
                   ),
                 ),
@@ -133,6 +126,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               ),
             ),
             const SizedBox(height: 22),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                cacheExtent: 400,
+                padding: EdgeInsets.fromLTRB(20, 0, 20, AppConstants.floatingNavReserved + 24 + bottomPad),
+                children: [
             Row(
               children: [
                 Expanded(
@@ -246,6 +248,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 const SizedBox(width: 10),
                 Expanded(child: QuickAction(icon: Icons.lock_rounded, label: 'Lock', onTap: ref.read(authControllerProvider.notifier).lock)),
               ],
+            ),
+                ],
+              ),
             ),
           ],
         ),

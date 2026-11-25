@@ -96,7 +96,9 @@ class _CredentialDetailPageState extends ConsumerState<CredentialDetailPage> {
           FilledButton(
             style: FilledButton.styleFrom(
               minimumSize: const Size(96, 44),
-              backgroundColor: AppColors.error,
+              backgroundColor: AppColors.error.withValues(alpha: 0.18),
+              foregroundColor: AppColors.error,
+              side: BorderSide(color: AppColors.error.withValues(alpha: 0.35)),
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete'),

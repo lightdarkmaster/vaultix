@@ -141,14 +141,19 @@ class _ClearVaultPageState extends ConsumerState<ClearVaultPage> {
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
-                  style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.error.withValues(alpha: 0.18),
+                    foregroundColor: AppColors.error,
+                    disabledBackgroundColor: AppColors.error.withValues(alpha: 0.10),
+                    side: BorderSide(color: AppColors.error.withValues(alpha: 0.35)),
+                  ),
                   onPressed: _busy ? null : _erase,
                   child: _busy
                       ? const SizedBox(
                           height: 22,
                           width: 22,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2.4, color: Colors.white),
+                              strokeWidth: 2.4, color: AppColors.error),
                         )
                       : const Text('Erase everything'),
                 ),

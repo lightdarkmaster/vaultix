@@ -38,19 +38,35 @@ class GeneratorPage extends ConsumerWidget {
         Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55);
     final bottomPad = MediaQuery.viewPaddingOf(context).bottom;
 
-    return ListView(
-      padding: EdgeInsets.fromLTRB(
-        20,
-        16,
-        20,
-        AppConstants.floatingNavReserved + bottomPad,
-      ),
-      children: [
-        Text('Generator', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 6),
-        Text('Random passwords made on this device.',
-            style: TextStyle(color: muted)),
-        const SizedBox(height: 20),
+    return SafeArea(
+      bottom: false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Generator', style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: 6),
+                Text('Random passwords made on this device.',
+                    style: TextStyle(color: muted)),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              cacheExtent: 300,
+              padding: EdgeInsets.fromLTRB(
+                20,
+                0,
+                20,
+                AppConstants.floatingNavReserved + bottomPad,
+              ),
+              children: [
         VaultixCard(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -93,7 +109,11 @@ class GeneratorPage extends ConsumerWidget {
           icon: Icons.lock_rounded,
           onPressed: () => context.push('/vault/new', extra: state.password),
         ),
-      ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

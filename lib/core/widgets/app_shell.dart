@@ -87,7 +87,7 @@ class _GlassNavBar extends StatelessWidget {
         child: ClipRRect(
           borderRadius: radius,
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: radius,
@@ -127,7 +127,7 @@ class _GlassNavBar extends StatelessWidget {
                       child: Stack(
                         children: [
                           AnimatedPositioned(
-                            duration: const Duration(milliseconds: 360),
+                            duration: const Duration(milliseconds: 240),
                             curve: Curves.easeOutCubic,
                             left: selectedIndex * itemWidth + indicatorInsetX,
                             top: indicatorInsetY,

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_colors.dart';
-
 /// Monospace password with digits and symbols tinted so it is easy to read.
 class PasswordDisplay extends StatelessWidget {
   const PasswordDisplay({super.key, required this.password, this.fontSize = 24});
@@ -14,6 +12,7 @@ class PasswordDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Text.rich(
       TextSpan(
         children: [
@@ -21,10 +20,10 @@ class PasswordDisplay extends StatelessWidget {
             TextSpan(
               text: ch,
               style: _digit.hasMatch(ch)
-                  ? const TextStyle(color: AppColors.secondary)
+                  ? TextStyle(color: scheme.secondary)
                   : _letter.hasMatch(ch)
                       ? null
-                      : const TextStyle(color: AppColors.error),
+                      : TextStyle(color: scheme.tertiary),
             ),
         ],
       ),

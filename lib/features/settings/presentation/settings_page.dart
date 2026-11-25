@@ -25,11 +25,19 @@ class SettingsPage extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       body: SafeArea(
         bottom: false,
-        child: ListView(
-          padding: EdgeInsets.fromLTRB(20, 16, 20, AppConstants.floatingNavReserved + 16 + bottomPad),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Settings', style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: Text('Settings', style: Theme.of(context).textTheme.headlineMedium),
+            ),
+            Expanded(
+              child: ListView(
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                cacheExtent: 400,
+                padding: EdgeInsets.fromLTRB(20, 0, 20, AppConstants.floatingNavReserved + 16 + bottomPad),
+                children: [
             const SectionHeader(title: 'Security'),
             const SecuritySection(),
             const SizedBox(height: 20),
@@ -89,6 +97,9 @@ class SettingsPage extends ConsumerWidget {
             const SizedBox(height: 20),
             const SectionHeader(title: 'About'),
             const AboutSection(),
+                ],
+              ),
+            ),
           ],
         ),
       ),

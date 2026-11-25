@@ -69,12 +69,14 @@ class GlassSurface extends StatelessWidget {
     );
 
     if (blurSigma > 0) {
-      content = ClipRRect(
-        borderRadius: radius,
-        clipBehavior: clipBehavior,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-          child: content,
+      content = RepaintBoundary(
+        child: ClipRRect(
+          borderRadius: radius,
+          clipBehavior: clipBehavior,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+            child: content,
+          ),
         ),
       );
     } else {
