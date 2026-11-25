@@ -73,7 +73,16 @@ class SettingsPage extends ConsumerWidget {
                       onSelectionChanged: (s) => notifier.setThemeMode(s.first),
                     ),
                   ),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 12),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    secondary: _iconBox(context, Icons.contrast_rounded),
+                    title: const Text('AMOLED dark'),
+                    subtitle: const Text('Use true black for dark mode'),
+                    value: settings.amoledDark,
+                    onChanged: notifier.setAmoledDark,
+                  ),
+                  const SizedBox(height: 10),
                   Text('Accent color', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 12),
                   Wrap(

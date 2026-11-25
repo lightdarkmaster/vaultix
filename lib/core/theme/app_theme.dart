@@ -6,10 +6,12 @@ class AppTheme {
   AppTheme._();
 
   static ThemeData light(Color accent) => _build(accent, Brightness.light);
-  static ThemeData dark(Color accent) => _build(accent, Brightness.dark);
+  static ThemeData dark(Color accent, {bool amoled = false}) =>
+      _build(accent, Brightness.dark, amoled: amoled);
 
-  static ThemeData _build(Color accent, Brightness brightness) {
+  static ThemeData _build(Color accent, Brightness brightness, {bool amoled = false}) {
     final isDark = brightness == Brightness.dark;
+    final darkSurface = amoled ? Colors.black : AppColors.surfaceDark;
     final scheme = ColorScheme.fromSeed(
       seedColor: accent,
       brightness: brightness,
@@ -17,15 +19,15 @@ class AppTheme {
       primary: accent,
       secondary: AppColors.secondary,
       error: AppColors.error,
-      surface: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+      surface: isDark ? darkSurface : AppColors.surfaceLight,
       onSurface: isDark ? const Color(0xFFF3F5FA) : const Color(0xFF1A1D26),
     );
 
     final glassFill = isDark
-        ? Colors.white.withValues(alpha: 0.06)
+        ? Colors.white.withValues(alpha: amoled ? 0.05 : 0.06)
         : Colors.white.withValues(alpha: 0.62);
     final glassBorder = isDark
-        ? Colors.white.withValues(alpha: 0.12)
+        ? Colors.white.withValues(alpha: amoled ? 0.14 : 0.12)
         : Colors.white.withValues(alpha: 0.55);
 
     final fieldBorder = OutlineInputBorder(

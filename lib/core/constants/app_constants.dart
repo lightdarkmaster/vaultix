@@ -16,6 +16,7 @@ class AppConstants {
   static const prefGenDigits = 'pref_gen_digits';
   static const prefGenSymbols = 'pref_gen_symbols';
   static const prefGenExcludeSimilar = 'pref_gen_exclude_similar';
+  static const prefAmoledDark = 'pref_amoled_dark';
 
   static const minMasterPasswordLength = 10;
   static const pinLength = 6;
