@@ -19,7 +19,7 @@ class VaultixApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       themeMode: settings.themeMode,
       theme: AppTheme.light(settings.accent),
-      darkTheme: AppTheme.dark(settings.accent),
+      darkTheme: AppTheme.dark(settings.accent, amoled: settings.amoledDark),
       themeAnimationDuration: const Duration(milliseconds: 320),
       themeAnimationCurve: Curves.easeOutCubic,
       routerConfig: ref.watch(routerProvider),

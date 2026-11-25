@@ -11,15 +11,25 @@ final sharedPreferencesProvider = Provider<SharedPreferences>(
 );
 
 class ThemeSettings {
-  const ThemeSettings({required this.themeMode, required this.accent});
+  const ThemeSettings({
+    required this.themeMode,
+    required this.accent,
+    this.amoledDark = false,
+  });
 
   final ThemeMode themeMode;
   final Color accent;
+  final bool amoledDark;
 
-  ThemeSettings copyWith({ThemeMode? themeMode, Color? accent}) =>
+  ThemeSettings copyWith({
+    ThemeMode? themeMode,
+    Color? accent,
+    bool? amoledDark,
+  }) =>
       ThemeSettings(
         themeMode: themeMode ?? this.themeMode,
         accent: accent ?? this.accent,
+        amoledDark: amoledDark ?? this.amoledDark,
       );
 }
 
@@ -31,13 +41,11 @@ class ThemeSettingsNotifier extends Notifier<ThemeSettings> {
     _prefs = ref.watch(sharedPreferencesProvider);
     final modeIndex = _prefs.getInt(AppConstants.prefThemeMode);
     final accentValue = _prefs.getInt(AppConstants.prefAccentColor);
+    final amoledDark = _prefs.getBool(AppConstants.prefAmoledDark) ?? false;
     return ThemeSettings(
-      themeMode: (modeIndex != null &&
-              modeIndex >= 0 &&
-              modeIndex < ThemeMode.values.length)
-          ? ThemeMode.values[modeIndex]
-          : ThemeMode.system,
+      themeMode: ThemeMode.values[modeIndex ?? ThemeMode.system.index],
       accent: accentValue != null ? Color(accentValue) : AppColors.primary,
+      amoledDark: amoledDark,
     );
   }
 
@@ -49,6 +57,11 @@ class ThemeSettingsNotifier extends Notifier<ThemeSettings> {
   Future<void> setAccent(Color color) async {
     state = state.copyWith(accent: color);
     await _prefs.setInt(AppConstants.prefAccentColor, color.toARGB32());
+  }
+
+  Future<void> setAmoledDark(bool value) async {
+    state = state.copyWith(amoledDark: value);
+    await _prefs.setBool(AppConstants.prefAmoledDark, value);
   }
 }
 

@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 /// A reusable glassmorphism surface.
 ///
 /// Uses a subtle blur by default only for floating surfaces (nav/dialog/sheet)
@@ -111,18 +113,23 @@ class GlassBackground extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final accent = theme.colorScheme.primary;
-    final bg = theme.scaffoldBackgroundColor;
+    final amoled = isDark && theme.colorScheme.surface == Colors.black;
+    final bg = isDark
+        ? (amoled ? Colors.black : AppColors.backgroundDark)
+        : AppColors.backgroundLight;
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-              ? [
-                  bg,
-                  Color.lerp(bg, accent, 0.10)!,
-                  Color.lerp(bg, const Color(0xFF0B1020), 0.55)!,
-                ]
+              ? (amoled
+                  ? [Colors.black, Color.lerp(Colors.black, accent, 0.08)!, Colors.black]
+                  : [
+                      bg,
+                      Color.lerp(bg, accent, 0.10)!,
+                      Color.lerp(bg, const Color(0xFF0B1020), 0.55)!,
+                    ])
               : [
                   Color.lerp(bg, accent, 0.05)!,
                   bg,
@@ -140,7 +147,7 @@ class GlassBackground extends StatelessWidget {
                   center: const Alignment(-0.9, -0.8),
                   radius: 1.1,
                   colors: [
-                    accent.withValues(alpha: isDark ? 0.18 : 0.12),
+                    accent.withValues(alpha: isDark ? (amoled ? 0.10 : 0.18) : 0.12),
                     Colors.transparent,
                   ],
                 ),
@@ -155,7 +162,7 @@ class GlassBackground extends StatelessWidget {
                   center: const Alignment(0.9, 0.9),
                   radius: 1.2,
                   colors: [
-                    theme.colorScheme.secondary.withValues(alpha: isDark ? 0.12 : 0.08),
+                    theme.colorScheme.secondary.withValues(alpha: isDark ? (amoled ? 0.06 : 0.12) : 0.08),
                     Colors.transparent,
                   ],
                 ),

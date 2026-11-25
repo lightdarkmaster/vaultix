@@ -3,7 +3,7 @@
 class AppInfo {
   AppInfo._();
 
-  static const developerName = 'Vaultix Developer';
+  static const developerName = 'Christian Barbosa';
 
   /// Leave empty to hide the "Contact" row.
   static const contactEmail = '';
