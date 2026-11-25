@@ -22,27 +22,30 @@ class VaultixCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = scheme.primary;
     final card = GlassSurface(
       borderRadius: borderRadius,
       padding: padding,
       onTap: onTap,
       color: color ??
-          (isDark
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.white.withValues(alpha: 0.62)),
-      borderOpacity: isDark ? 0.14 : 0.5,
+          Color.lerp(
+            isDark ? const Color(0xFF1A1F2B) : Colors.white,
+            accent,
+            isDark ? 0.10 : 0.06,
+          )!
+              .withValues(alpha: isDark ? 0.72 : 0.74),
+      borderOpacity: isDark ? 0.22 : 0.45,
       shadows: [
         BoxShadow(
           color: Colors.black.withValues(alpha: isDark ? 0.16 : 0.045),
           blurRadius: 20,
           offset: const Offset(0, 8),
         ),
-        if (!isDark)
-          BoxShadow(
-            color: scheme.primary.withValues(alpha: 0.03),
-            blurRadius: 24,
-            offset: const Offset(0, 2),
-          ),
+        BoxShadow(
+          color: accent.withValues(alpha: isDark ? 0.08 : 0.05),
+          blurRadius: 24,
+          offset: const Offset(0, 2),
+        ),
       ],
       child: child,
     );
