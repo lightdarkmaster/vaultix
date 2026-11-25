@@ -26,7 +26,22 @@ class AppShell extends StatelessWidget {
       // GoRouter's StatefulShellRoute owns branch state. Wrapping it in a
       // keyed AnimatedSwitcher would recreate the shell on every tab change
       // and discard cached branch pages, so keep it stable.
-      body: navigationShell,
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onHorizontalDragEnd: (details) {
+          final velocity = details.primaryVelocity ?? 0;
+          if (velocity.abs() < 350) return;
+          final current = navigationShell.currentIndex;
+          if (velocity < 0 && current < _items.length - 1) {
+            HapticFeedback.selectionClick();
+            navigationShell.goBranch(current + 1);
+          } else if (velocity > 0 && current > 0) {
+            HapticFeedback.selectionClick();
+            navigationShell.goBranch(current - 1);
+          }
+        },
+        child: navigationShell,
+      ),
       bottomNavigationBar: SafeArea(
         top: false,
         minimum: EdgeInsets.fromLTRB(16, 8, 16, bottomInset > 0 ? 10 : 14),
@@ -84,9 +99,20 @@ class _GlassNavBar extends StatelessWidget {
       heightFactor: 1,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 560),
-        child: ClipRRect(
-          borderRadius: radius,
-          child: BackdropFilter(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragEnd: (details) {
+            final velocity = details.primaryVelocity ?? 0;
+            if (velocity.abs() < 350) return;
+            if (velocity < 0 && selectedIndex < items.length - 1) {
+              onSelected(selectedIndex + 1);
+            } else if (velocity > 0 && selectedIndex > 0) {
+              onSelected(selectedIndex - 1);
+            }
+          },
+          child: ClipRRect(
+            borderRadius: radius,
+            child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -181,6 +207,7 @@ class _GlassNavBar extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

@@ -202,16 +202,21 @@ class AuthController extends Notifier<AuthState> {
 
   Future<bool> setBiometric(bool enabled) async {
     if (enabled) {
-      final key = ref.read(vaultKeyProvider);
+      final key = ref.read(vaultKeyProvider.notifier).copy();
       if (key == null) return false;
-      final ok = await _service.enableBiometric(key);
-      await _refreshQuickUnlock();
-      return ok;
+      try {
+        final ok = await _service.enableBiometric(key);
+        await _refreshQuickUnlock();
+        return ok;
+      } finally {
+        CryptoService.wipe(key);
+      }
     }
     await _service.disableBiometric();
     await _refreshQuickUnlock();
     return true;
   }
+
 }
 
 final authControllerProvider =

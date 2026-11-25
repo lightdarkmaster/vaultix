@@ -35,6 +35,7 @@ class UnlockOutcome {
   const UnlockOutcome.pinRemoved() : this._(UnlockStatus.pinRemoved);
   const UnlockOutcome.cancelled() : this._(UnlockStatus.cancelled);
   const UnlockOutcome.unavailable() : this._(UnlockStatus.unavailable);
+  const UnlockOutcome.disabled() : this._(UnlockStatus.success);
 
   final UnlockStatus status;
   final Uint8List? vaultKey;

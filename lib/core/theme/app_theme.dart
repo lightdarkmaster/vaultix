@@ -23,12 +23,18 @@ class AppTheme {
       onSurface: isDark ? const Color(0xFFF3F5FA) : const Color(0xFF1A1D26),
     );
 
-    final glassFill = isDark
-        ? Colors.white.withValues(alpha: amoled ? 0.05 : 0.06)
-        : Colors.white.withValues(alpha: 0.62);
-    final glassBorder = isDark
-        ? Colors.white.withValues(alpha: amoled ? 0.14 : 0.12)
-        : Colors.white.withValues(alpha: 0.55);
+    final glassFill = Color.lerp(
+      isDark ? (amoled ? Colors.black : const Color(0xFF171C26)) : Colors.white,
+      accent,
+      isDark ? 0.08 : 0.05,
+    )!
+        .withValues(alpha: isDark ? (amoled ? 0.62 : 0.72) : 0.72);
+    final glassBorder = Color.lerp(
+      isDark ? Colors.white : Colors.white,
+      accent,
+      isDark ? 0.18 : 0.10,
+    )!
+        .withValues(alpha: isDark ? (amoled ? 0.16 : 0.14) : 0.55);
 
     final fieldBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(18),
