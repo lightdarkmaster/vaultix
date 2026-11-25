@@ -125,6 +125,28 @@ class AppTheme {
             if (states.contains(WidgetState.pressed)) return 1;
             return 0;
           }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return scheme.onSurface.withValues(alpha: 0.10);
+            }
+            if (states.contains(WidgetState.pressed)) {
+              return accent.withValues(alpha: isDark ? 0.30 : 0.22);
+            }
+            return accent.withValues(alpha: isDark ? 0.24 : 0.16);
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return scheme.onSurface.withValues(alpha: 0.40);
+            }
+            return scheme.onSurface;
+          }),
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return BorderSide(color: glassBorder.withValues(alpha: 0.5));
+            }
+            return BorderSide(color: accent.withValues(alpha: isDark ? 0.38 : 0.28));
+          }),
+          overlayColor: WidgetStatePropertyAll(accent.withValues(alpha: 0.08)),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -136,23 +158,46 @@ class AppTheme {
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           ),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return scheme.onSurface.withValues(alpha: 0.03);
+            }
+            if (states.contains(WidgetState.pressed)) {
+              return scheme.onSurface.withValues(alpha: isDark ? 0.10 : 0.08);
+            }
+            return scheme.onSurface.withValues(alpha: isDark ? 0.06 : 0.04);
+          }),
           side: WidgetStateProperty.resolveWith((states) {
             final color = states.contains(WidgetState.focused)
-                ? accent
-                : scheme.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7);
+                ? accent.withValues(alpha: 0.65)
+                : glassBorder.withValues(alpha: isDark ? 0.55 : 0.75);
             return BorderSide(color: color, width: 1.2);
           }),
           foregroundColor: WidgetStatePropertyAll(scheme.onSurface),
+          overlayColor: WidgetStatePropertyAll(accent.withValues(alpha: 0.08)),
           textStyle: const WidgetStatePropertyAll(
             TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600),
           ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: accent,
-          textStyle: const TextStyle(fontWeight: FontWeight.w600),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        style: ButtonStyle(
+          foregroundColor: WidgetStatePropertyAll(accent),
+          textStyle: const WidgetStatePropertyAll(
+            TextStyle(fontWeight: FontWeight.w600),
+          ),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
+          overlayColor: WidgetStatePropertyAll(accent.withValues(alpha: 0.08)),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed) ||
+                states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused)) {
+              return accent.withValues(alpha: 0.08);
+            }
+            return Colors.transparent;
+          }),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
@@ -160,13 +205,34 @@ class AppTheme {
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return scheme.onSurface.withValues(alpha: isDark ? 0.10 : 0.08);
+            }
+            if (states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused)) {
+              return scheme.onSurface.withValues(alpha: isDark ? 0.07 : 0.05);
+            }
+            return Colors.transparent;
+          }),
+          overlayColor: WidgetStatePropertyAll(accent.withValues(alpha: 0.08)),
         ),
+      ),
+      iconTheme: IconThemeData(color: scheme.primary.withValues(alpha: 0.92), size: 24),
+      primaryIconTheme: IconThemeData(color: scheme.primary, size: 24),
+      actionIconTheme: ActionIconThemeData(
+        backButtonIconBuilder: (_) => Icon(Icons.arrow_back_rounded, color: scheme.primary),
+        closeButtonIconBuilder: (_) => Icon(Icons.close_rounded, color: scheme.primary),
+        drawerButtonIconBuilder: (_) => Icon(Icons.menu_rounded, color: scheme.primary),
+        endDrawerButtonIconBuilder: (_) => Icon(Icons.menu_rounded, color: scheme.primary),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: glassFill,
         hintStyle: TextStyle(color: scheme.onSurface.withValues(alpha: 0.45)),
         labelStyle: TextStyle(color: scheme.onSurface.withValues(alpha: 0.72)),
+        prefixIconColor: scheme.primary.withValues(alpha: 0.9),
+        suffixIconColor: scheme.primary.withValues(alpha: 0.9),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
         border: fieldBorder,
@@ -182,7 +248,7 @@ class AppTheme {
         ),
       ),
       listTileTheme: ListTileThemeData(
-        iconColor: scheme.onSurface.withValues(alpha: 0.85),
+        iconColor: scheme.primary.withValues(alpha: 0.92),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
       ),
@@ -201,12 +267,36 @@ class AppTheme {
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
-          (s) => s.contains(WidgetState.selected) ? Colors.white : null,
+          (s) => s.contains(WidgetState.selected)
+              ? Colors.white.withValues(alpha: 0.95)
+              : scheme.onSurface.withValues(alpha: isDark ? 0.72 : 0.58),
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)
+              ? accent.withValues(alpha: isDark ? 0.45 : 0.35)
+              : scheme.onSurface.withValues(alpha: isDark ? 0.14 : 0.10),
+        ),
+        trackOutlineColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected)
+              ? accent.withValues(alpha: isDark ? 0.55 : 0.40)
+              : glassBorder.withValues(alpha: isDark ? 0.45 : 0.70),
+        ),
+        trackOutlineWidth: const WidgetStatePropertyAll(1),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        side: BorderSide(color: glassBorder.withValues(alpha: isDark ? 0.55 : 0.75)),
+        fillColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected)
+              ? accent.withValues(alpha: 0.75)
+              : Colors.transparent,
+        ),
+      ),
+      radioTheme: RadioThemeData(
+        fillColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected)
               ? accent.withValues(alpha: 0.85)
-              : scheme.outlineVariant.withValues(alpha: 0.35),
+              : scheme.onSurface.withValues(alpha: 0.55),
         ),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
@@ -220,10 +310,16 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: accent,
-        foregroundColor: Colors.white,
+        backgroundColor: accent.withValues(alpha: isDark ? 0.28 : 0.20),
+        foregroundColor: scheme.onSurface,
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        focusElevation: 0,
+        hoverElevation: 0,
+        highlightElevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: accent.withValues(alpha: isDark ? 0.45 : 0.30)),
+        ),
       ),
       popupMenuTheme: PopupMenuThemeData(
         color: isDark ? const Color(0xF2222735) : Colors.white.withValues(alpha: 0.96),
@@ -246,10 +342,10 @@ class AppTheme {
       ),
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
-          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
           TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.windows: ZoomPageTransitionsBuilder(),
-          TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+          TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
           TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
         },
       ),

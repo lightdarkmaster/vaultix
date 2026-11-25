@@ -87,99 +87,102 @@ class _VaultPageState extends ConsumerState<VaultPage> {
           child: const Icon(Icons.add_rounded),
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 8, 0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text('Vault',
-                      style: Theme.of(context).textTheme.headlineMedium),
-                ),
-                IconButton(
-                  tooltip: 'Favorites only',
-                  onPressed: notifier.toggleFavorites,
-                  icon: Icon(
-                    filter.favoritesOnly
-                        ? Icons.star_rounded
-                        : Icons.star_outline_rounded,
-                    color: filter.favoritesOnly ? AppColors.warning : null,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 8, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text('Vault',
+                        style: Theme.of(context).textTheme.headlineMedium),
                   ),
-                ),
-                PopupMenuButton<CredentialSort>(
-                  tooltip: 'Sort',
-                  icon: const Icon(Icons.sort_rounded),
-                  onSelected: notifier.setSort,
-                  itemBuilder: (_) => [
-                    CheckedPopupMenuItem(
-                      value: CredentialSort.title,
-                      checked: filter.sort == CredentialSort.title,
-                      child: const Text('Alphabetical'),
+                  IconButton(
+                    tooltip: 'Favorites only',
+                    onPressed: notifier.toggleFavorites,
+                    icon: Icon(
+                      filter.favoritesOnly
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
+                      color: filter.favoritesOnly ? AppColors.warning : null,
                     ),
-                    CheckedPopupMenuItem(
-                      value: CredentialSort.recentlyAdded,
-                      checked: filter.sort == CredentialSort.recentlyAdded,
-                      child: const Text('Recently added'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            child: TextField(
-              controller: _search,
-              onChanged: _onSearchChanged,
-              textInputAction: TextInputAction.search,
-              decoration: InputDecoration(
-                hintText: 'Search name, website, username or tag',
-                prefixIcon: const Icon(Icons.search_rounded),
-                suffixIcon: _search.text.isEmpty
-                    ? null
-                    : IconButton(
-                        tooltip: 'Clear search',
-                        icon: const Icon(Icons.close_rounded),
-                        onPressed: () {
-                          _search.clear();
-                          setState(() {});
-                          notifier.setQuery('');
-                        },
+                  ),
+                  PopupMenuButton<CredentialSort>(
+                    tooltip: 'Sort',
+                    icon: const Icon(Icons.sort_rounded),
+                    onSelected: notifier.setSort,
+                    itemBuilder: (_) => [
+                      CheckedPopupMenuItem(
+                        value: CredentialSort.title,
+                        checked: filter.sort == CredentialSort.title,
+                        child: const Text('Alphabetical'),
                       ),
+                      CheckedPopupMenuItem(
+                        value: CredentialSort.recentlyAdded,
+                        checked: filter.sort == CredentialSort.recentlyAdded,
+                        child: const Text('Recently added'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ),
-          SizedBox(
-            height: 44,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: const Text('All'),
-                    selected: filter.categoryId == null,
-                    onSelected: (_) => notifier.setCategory(null),
-                  ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+              child: TextField(
+                controller: _search,
+                onChanged: _onSearchChanged,
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  hintText: 'Search name, website, username or tag',
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  suffixIcon: _search.text.isEmpty
+                      ? null
+                      : IconButton(
+                          tooltip: 'Clear search',
+                          icon: const Icon(Icons.close_rounded),
+                          onPressed: () {
+                            _search.clear();
+                            setState(() {});
+                            notifier.setQuery('');
+                          },
+                        ),
                 ),
-                for (final c in categories)
+              ),
+            ),
+            SizedBox(
+              height: 44,
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
-                      avatar: Icon(CategoryIcons.resolve(c.category.iconKey),
-                          size: 18, color: Color(c.category.color)),
-                      label: Text(c.category.name),
-                      selected: filter.categoryId == c.category.id,
-                      onSelected: (sel) =>
-                          notifier.setCategory(sel ? c.category.id : null),
+                      label: const Text('All'),
+                      selected: filter.categoryId == null,
+                      onSelected: (_) => notifier.setCategory(null),
                     ),
                   ),
-              ],
+                  for (final c in categories)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        avatar: Icon(CategoryIcons.resolve(c.category.iconKey),
+                            size: 18, color: Color(c.category.color)),
+                        label: Text(c.category.name),
+                        selected: filter.categoryId == c.category.id,
+                        onSelected: (sel) =>
+                            notifier.setCategory(sel ? c.category.id : null),
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
+            const SizedBox(height: 8),
           Expanded(
             child: list.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -213,6 +216,8 @@ class _VaultPageState extends ConsumerState<VaultPage> {
                         );
                 }
                 return ListView.separated(
+                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  cacheExtent: 500,
                   padding: EdgeInsets.fromLTRB(
                     20,
                     4,
@@ -236,7 +241,8 @@ class _VaultPageState extends ConsumerState<VaultPage> {
               },
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
